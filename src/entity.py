@@ -15,7 +15,7 @@ class Entity:
     def render(self, screen: pygame.Surface) -> None:
         screen.blit(self.image, self.rect)
 
-    def kil(self) -> None:
+    def kill(self) -> None:
         self.alive = False
 
     def move(self, x: int, y: int) -> None:

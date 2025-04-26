@@ -1,10 +1,12 @@
+from typing import Iterable
+
 import pygame
 
 
 class Entity:
-    def __init__(self, image, coords: tuple[int], speed: float):
+    def __init__(self, image: pygame.Surface, coords: Iterable[float], speed: float):
         self.image = image.copy()
-        self.rect = self.image.get_rect(center=coords)
+        self.rect = self.image.get_frect(center=coords)
         self.speed = speed
         self.mask = pygame.mask.from_surface(self.image)
         self.alive = True

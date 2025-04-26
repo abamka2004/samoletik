@@ -1,10 +1,13 @@
+import pygame
+from typing import Iterable
+
 from .entity import Entity
 from .constants import DISPLAY_SIZE
 
 
 class Enemy(Entity):
-    def __init__(self, image, coords, speed, damage: int | float):
-        super().__init__(image, coords, speed, damage)
+    def __init__(self, image: pygame.Surface, coords: Iterable[float], speed: int, damage: float):
+        super().__init__(image, coords, speed)
         self.damage = damage
 
     def update(self):

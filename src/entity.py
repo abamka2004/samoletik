@@ -20,8 +20,8 @@ class Entity:
     def kill(self) -> None:
         self.alive = False
 
-    def move(self, x: int, y: int) -> None:
+    def move(self, x: float, y: float) -> None:
         self.rect.move_ip(x, y)
 
-    def collide_entity(self, other) -> bool:
+    def collide_entity(self, other) -> tuple[int, int] | None:
         return pygame.sprite.collide_mask(self, other)

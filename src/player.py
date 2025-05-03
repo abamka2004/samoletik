@@ -5,7 +5,7 @@ from .constants import SHOOT_EVENT
 
 
 class Player(Entity):
-    def __init__(self, image, coords: tuple[int], speed: int, health: int=100):
+    def __init__(self, image, coords: tuple[float, int], speed: float, health: int=100):
         super().__init__(image, coords, speed)
         self.health = health
     

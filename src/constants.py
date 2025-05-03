@@ -9,7 +9,13 @@ SHOOT_EVENT = pygame.event.custom_type()
 SPAWN_EVENT = pygame.event.custom_type()
 
 # переменные игрока
+HEALTH_BAR_WIDTH = 150
+PLAYER_HEALTH = 100
+PLAYER_SPEED = 7.5
 
 # переменные врага
+ENEMY_DAMAGE = 10
+ENEMY_SPEED = 5
 
 # переменные для пули
+BULLET_SPEED = 10

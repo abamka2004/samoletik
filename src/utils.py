@@ -1,8 +1,13 @@
 import os
 import sys
-import pygame
 
-def get_path(*path) -> str:
+from typing import LiteralString
+
+import pygame
+from pygame.typing import SequenceLike
+
+
+def get_path(*path) -> LiteralString | str | bytes:
     if getattr(sys, 'frozen', False):
         base_dir = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
     else:
@@ -10,7 +15,7 @@ def get_path(*path) -> str:
     return os.path.join(base_dir, *path)
 
 
-def load_image(*path, size) -> pygame.Surface:
+def load_image(*path: str, size: SequenceLike[float]) -> pygame.Surface:
     image = pygame.image.load(get_path(*path)).convert()
     image = pygame.transform.scale(image, size)
     image.set_colorkey((0,0,0))

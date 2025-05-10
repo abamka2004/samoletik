@@ -1,11 +1,11 @@
 import pygame
 
 from .entity import Entity
-from .constants import SHOOT_EVENT
+from .constants import SHOOT_EVENT, DISPLAY_SIZE
 
 
 class Player(Entity):
-    def __init__(self, image, coords: tuple[float, int], speed: float, health: int=100):
+    def __init__(self, image: pygame.Surface, coords: tuple[float, int], speed: float, health: int=100):
         super().__init__(image, coords, speed)
         self.health = health
     
@@ -30,3 +30,13 @@ class Player(Entity):
         just_pressed_keys = pygame.key.get_just_pressed()
         if just_pressed_keys[pygame.K_SPACE]:
             pygame.event.post(pygame.Event(SHOOT_EVENT))
+
+
+    def move(self, x: float, y: float):
+        super().move(x, y)
+
+        if self.rect.right < 0:
+            self.rect.centerx = DISPLAY_SIZE[0]
+        
+        if self.rect.left > DISPLAY_SIZE[0]:
+            self.rect.centerx = 0

@@ -7,7 +7,7 @@ import pygame
 from pygame.typing import SequenceLike
 
 
-def get_path(*path) -> LiteralString | str | bytes:
+def get_path(*path: str) -> LiteralString | str | bytes:
     if getattr(sys, 'frozen', False):
         base_dir = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
     else:

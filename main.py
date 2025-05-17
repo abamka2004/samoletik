@@ -14,7 +14,15 @@ from src.utils import load_image, get_path
 def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
     asteroid_image = load_image('assets', 'images', 'asteroid.png', size=[164, 164])
     background_image = load_image('assets', 'images', 'background.png', size=DISPLAY_SIZE)
+
     player_image = load_image('assets', 'images', 'player.png', size=[96, 96])
+    player_image1 = load_image('assets', 'images', 'player1.png', size=[96, 96])
+    player_image2 = load_image('assets', 'images', 'player2.png', size=[96, 96])
+    player_image3 = load_image('assets', 'images', 'player3.png', size=[96, 96])
+    player_image4 = load_image('assets', 'images', 'player4.png', size=[96, 96])
+
+    player_animation = [player_image, player_image1, player_image2, player_image3, player_image4]
+
     shot_image = load_image('assets', 'images', 'shot.png', size=[64, 64])
 
     shot_sound = pygame.Sound(get_path('assets', 'sounds', 'shot.wav'))
@@ -22,7 +30,7 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
     explosion_sound = pygame.Sound(get_path('assets', 'sounds', 'explosion.wav')) 
 
     coords = DISPLAY_SIZE[0] /2, DISPLAY_SIZE[1] -70
-    player = Player(player_image, coords, PLAYER_SPEED, PLAYER_HEALTH)
+    player = Player(player_animation, coords, PLAYER_SPEED, PLAYER_HEALTH)
 
     bullets = list()
     enemies = list()
@@ -31,7 +39,7 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
 
     score = 0
     difficulty = 0
-    pygame.time.set_timer(SPAWN_EVENT, 3000, 1)
+    pygame.time.set_timer(SPAWN_EVENT, 2000, 1)
 
     while player.health > 0:
         difficulty += clock.get_time()

@@ -3,26 +3,31 @@ import pygame
 from random import randint
 
 from src.constants import (
-    MAX_FPS, DISPLAY_SIZE, HEALTH_BAR_WIDTH, PLAYER_SPEED, PLAYER_HEALTH, ENEMY_SPEED, ENEMY_DAMAGE, BULLET_SPEED)
-from src.constants import SHOOT_EVENT, SPAWN_EVENT
+    DISPLAY_SIZE,
+    HEALTH_BAR_WIDTH,
+    PLAYER_SPEED,
+    PLAYER_HEALTH,
+    ENEMY_SPEED,
+    ENEMY_DAMAGE,
+    BULLET_SPEED,
+    SHOOT_EVENT,
+    SPAWN_EVENT,
+    ENEMY_SHOOT_EVENT,
+    MAX_FPS,
+    SHOOT_ENEMY_DAMAGE,
+    SHOOT_ENEMY_SPEED,
+    SHOOT_ENEMY_INTERVAL
+    )
 from src.player import Player
-from src.bullet import Bullet
-from src.enemy import Enemy
+from src.bullet import Bullet, EnemyBullet
+from src.enemy import Enemy, ShootEnemy
 from src.utils import load_image, get_path
 
 
 def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
     asteroid_image = load_image('assets', 'images', 'asteroid.png', size=[164, 164])
     background_image = load_image('assets', 'images', 'background.png', size=DISPLAY_SIZE)
-
     player_image = load_image('assets', 'images', 'player.png', size=[96, 96])
-    player_image1 = load_image('assets', 'images', 'player1.png', size=[96, 96])
-    player_image2 = load_image('assets', 'images', 'player2.png', size=[96, 96])
-    player_image3 = load_image('assets', 'images', 'player3.png', size=[96, 96])
-    player_image4 = load_image('assets', 'images', 'player4.png', size=[96, 96])
-
-    player_animation = [player_image, player_image1, player_image2, player_image3, player_image4]
-
     shot_image = load_image('assets', 'images', 'shot.png', size=[64, 64])
 
     shot_sound = pygame.Sound(get_path('assets', 'sounds', 'shot.wav'))
@@ -30,7 +35,7 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
     explosion_sound = pygame.Sound(get_path('assets', 'sounds', 'explosion.wav')) 
 
     coords = DISPLAY_SIZE[0] /2, DISPLAY_SIZE[1] -70
-    player = Player(player_animation, coords, PLAYER_SPEED, PLAYER_HEALTH)
+    player = Player(player_image, coords, PLAYER_SPEED, PLAYER_HEALTH)
 
     bullets = list()
     enemies = list()
@@ -39,7 +44,7 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
 
     score = 0
     difficulty = 0
-    pygame.time.set_timer(SPAWN_EVENT, 1800, 1)
+    pygame.time.set_timer(SPAWN_EVENT, 3000, 1)
 
     while player.health > 0:
         difficulty += clock.get_time()
@@ -52,17 +57,29 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
                 shot_sound.play()
                 b = Bullet(shot_image, player.rect.midtop, BULLET_SPEED)
                 bullets.append(b)
+            elif event.type == ENEMY_SHOOT_EVENT:
+                shot_sound.play()
+                b = EnemyBullet(pygame.transform.rotate(shot_image, 180), event.coords, BULLET_SPEED)
+                bullets.append(b)
             elif event.type == SPAWN_EVENT:
                 millis = max(750, round(2000 - difficulty / 70))
                 pygame.time.set_timer(SPAWN_EVENT, millis, 1)
-
                 new_asteroid_image = pygame.transform.rotozoom(asteroid_image, randint(0, 360), 1 + randint(-20, 80) / 100)
                 coords = [randint(50, DISPLAY_SIZE[0] - 50), -new_asteroid_image.height]
-                speed = ENEMY_SPEED + difficulty / 35_000
-                damage = round(ENEMY_DAMAGE + difficulty / 7000)
 
-                e = Enemy(new_asteroid_image, coords, speed, damage)
-                enemies.append(e)
+                if randint(0, 100) <= 50 - difficulty / 5000:
+                    speed = ENEMY_SPEED + difficulty / 35_000
+                    damage = round(ENEMY_DAMAGE + difficulty / 7_000)
+
+                    e = Enemy(new_asteroid_image, coords, speed, damage)
+                    enemies.append(e)
+                else:
+                    speed = SHOOT_ENEMY_SPEED + difficulty / 35_000
+                    damage = SHOOT_ENEMY_DAMAGE + difficulty / 7_000
+                    interval = SHOOT_ENEMY_INTERVAL + difficulty / 50_000
+
+                    e = ShootEnemy(new_asteroid_image, coords, speed, damage, interval)
+                    enemies.append(e)
 
         # update
         player.update()
@@ -78,12 +95,16 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
                 enemies.remove(e)
 
         for b in bullets:
-            for e in enemies:
-                if b.collide_entity(e):
-                    explosion_sound.play()
-                    b.kill()
-                    e.kill()
-                    score += 1
+            if isinstance(b, Bullet):
+                for e in enemies:
+                    if b.collide_entity(e):
+                        explosion_sound.play()
+                        b.kill()
+                        e.kill()
+                        score += 1
+            elif b.collide_entity(player):
+                player.get_damage(10)  # <------ ЗАМЕНИТЬ
+                b.kill
 
         for e in enemies:
             if e.collide_entity(player):

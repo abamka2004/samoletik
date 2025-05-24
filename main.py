@@ -39,7 +39,7 @@ def game(display: pygame.Surface, clock: pygame.time.Clock) -> None:
 
     score = 0
     difficulty = 0
-    pygame.time.set_timer(SPAWN_EVENT, 2000, 1)
+    pygame.time.set_timer(SPAWN_EVENT, 1800, 1)
 
     while player.health > 0:
         difficulty += clock.get_time()
